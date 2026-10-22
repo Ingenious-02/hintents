@@ -300,7 +300,8 @@ impl SimHost {
                 _ => None,
             };
             footprint_map = footprint_map.insert(Rc::clone(&key), AccessType::ReadWrite, budget)?;
-            storage_map = storage_map.insert(key, Some((Rc::new(entry.clone()), live_until)), budget)?;
+            storage_map =
+                storage_map.insert(key, Some((Rc::new(entry.clone()), live_until)), budget)?;
         }
 
         let storage =
@@ -455,7 +456,9 @@ impl SimHost {
     /// Returns the current simulated ledger sequence, if configured.
     #[allow(dead_code)]
     pub fn get_ledger_sequence(&self) -> Option<u32> {
-        self.inner.with_ledger_info(|li| Ok(li.sequence_number)).ok()
+        self.inner
+            .with_ledger_info(|li| Ok(li.sequence_number))
+            .ok()
     }
 }
 

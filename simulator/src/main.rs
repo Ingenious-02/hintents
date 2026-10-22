@@ -224,8 +224,7 @@ fn load_ledger_entries(
     entries: &HashMap<String, String>,
     replay_sequence: Option<u32>,
 ) -> Result<usize, String> {
-    crate::state::load_ledger_entries(sim_host, entries, replay_sequence)
-        .map_err(|e| e.to_string())
+    crate::state::load_ledger_entries(sim_host, entries, replay_sequence).map_err(|e| e.to_string())
 }
 
 fn execute_operations(
@@ -1658,7 +1657,8 @@ mod tests {
         );
 
         let mut sim_host = runner::SimHost::new(HostConfig::default());
-        let count = load_ledger_entries(&mut sim_host, &entries, None).expect("failed to load entries");
+        let count =
+            load_ledger_entries(&mut sim_host, &entries, None).expect("failed to load entries");
         assert_eq!(count, 1);
     }
 
@@ -1669,8 +1669,8 @@ mod tests {
         use sha2::Digest;
         use soroban_env_host::xdr::{
             ContractDataDurability, ContractDataEntry, ContractId, Hash, LedgerEntry,
-            LedgerEntryData, LedgerEntryExt, LedgerKey, LedgerKeyContractData, LedgerKeyTtl, Limits,
-            ScAddress, ScVal, TtlEntry, WriteXdr,
+            LedgerEntryData, LedgerEntryExt, LedgerKey, LedgerKeyContractData, LedgerKeyTtl,
+            Limits, ScAddress, ScVal, TtlEntry, WriteXdr,
         };
 
         let contract_id = Hash([12u8; 32]);

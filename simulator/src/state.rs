@@ -14,11 +14,11 @@
 //! raising [`StateError::EntryArchived`] (matching the network's `INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED`
 //! failure) when an entry has expired.
 
-use std::collections::HashMap;
 use sha2::{Digest, Sha256};
 use soroban_env_host::xdr::{
     Hash, LedgerEntry, LedgerEntryData, LedgerKey, Limits, ScVal, WriteXdr,
 };
+use std::collections::HashMap;
 
 use crate::snapshot::{self, LedgerSnapshot};
 
@@ -548,17 +548,18 @@ mod ttl_tests {
         let instance_entry = make_test_instance_entry([5u8; 32]);
         let (ttl_key, ttl_entry) = make_ttl_pair_for_key(&instance_key, 150);
 
-        let entries = vec![
-            (instance_key, instance_entry),
-            (ttl_key, ttl_entry),
-        ];
+        let entries = vec![(instance_key, instance_entry), (ttl_key, ttl_entry)];
 
         // Replaying at sequence 200 > 150 (expired)
         let result = validate_ledger_entries_ttl(&entries, 200);
         assert!(result.is_err());
         let err = result.unwrap_err();
-        assert!(err.to_string().contains(INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED));
-        assert!(err.to_string().contains("contract instance entry is archived"));
+        assert!(err
+            .to_string()
+            .contains(INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED));
+        assert!(err
+            .to_string()
+            .contains("contract instance entry is archived"));
     }
 
     #[test]
@@ -567,10 +568,7 @@ mod ttl_tests {
         let instance_entry = make_test_instance_entry([6u8; 32]);
         let (ttl_key, ttl_entry) = make_ttl_pair_for_key(&instance_key, 250);
 
-        let entries = vec![
-            (instance_key, instance_entry),
-            (ttl_key, ttl_entry),
-        ];
+        let entries = vec![(instance_key, instance_entry), (ttl_key, ttl_entry)];
 
         // Replaying at sequence 200 <= 250 (live)
         let result = validate_ledger_entries_ttl(&entries, 200);
@@ -583,16 +581,15 @@ mod ttl_tests {
         let code_entry = make_test_code_entry([7u8; 32]);
         let (ttl_key, ttl_entry) = make_ttl_pair_for_key(&code_key, 120);
 
-        let entries = vec![
-            (code_key, code_entry),
-            (ttl_key, ttl_entry),
-        ];
+        let entries = vec![(code_key, code_entry), (ttl_key, ttl_entry)];
 
         // Replaying at sequence 150 > 120 (expired)
         let result = validate_ledger_entries_ttl(&entries, 150);
         assert!(result.is_err());
         let err = result.unwrap_err();
-        assert!(err.to_string().contains(INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED));
+        assert!(err
+            .to_string()
+            .contains(INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED));
         assert!(err.to_string().contains("contract code entry is archived"));
     }
 
@@ -602,10 +599,7 @@ mod ttl_tests {
         let code_entry = make_test_code_entry([8u8; 32]);
         let (ttl_key, ttl_entry) = make_ttl_pair_for_key(&code_key, 300);
 
-        let entries = vec![
-            (code_key, code_entry),
-            (ttl_key, ttl_entry),
-        ];
+        let entries = vec![(code_key, code_entry), (ttl_key, ttl_entry)];
 
         // Replaying at sequence 300 (exact boundary: live)
         let result = validate_ledger_entries_ttl(&entries, 300);
@@ -622,7 +616,9 @@ mod ttl_tests {
         let result = validate_ledger_entries_ttl(&entries, 101);
         assert!(result.is_err());
         let err = result.unwrap_err();
-        assert!(err.to_string().contains(INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED));
+        assert!(err
+            .to_string()
+            .contains(INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED));
     }
 
     #[test]
@@ -654,10 +650,7 @@ mod ttl_tests {
         let instance_entry = make_test_instance_entry([12u8; 32]);
         let (ttl_key, ttl_entry) = make_ttl_pair_for_key(&instance_key, 50);
 
-        let entries = vec![
-            (instance_key, instance_entry),
-            (ttl_key, ttl_entry),
-        ];
+        let entries = vec![(instance_key, instance_entry), (ttl_key, ttl_entry)];
 
         // Sequence 0 indicates uninitialized / no check
         let result = validate_ledger_entries_ttl(&entries, 0);
@@ -712,7 +705,10 @@ mod ttl_tests {
 
         let entries = vec![(acc_key, acc_entry)];
         let result = validate_ledger_entries_ttl(&entries, 1000);
-        assert!(result.is_ok(), "Account entries should not be subject to TTL expiry");
+        assert!(
+            result.is_ok(),
+            "Account entries should not be subject to TTL expiry"
+        );
     }
 
     #[test]
@@ -732,7 +728,8 @@ mod ttl_tests {
         );
 
         let mut host = crate::runner::SimHost::new(crate::runner::HostConfig::default());
-        let count = load_ledger_entries(&mut host, &map, Some(300)).expect("loading should succeed");
+        let count =
+            load_ledger_entries(&mut host, &map, Some(300)).expect("loading should succeed");
         assert_eq!(count, 2);
     }
 
@@ -756,7 +753,11 @@ mod ttl_tests {
         let result = load_ledger_entries(&mut host, &map, Some(300));
         assert!(result.is_err());
         let err = result.unwrap_err();
-        assert!(err.to_string().contains(INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED));
-        assert!(err.to_string().contains("contract instance entry is archived"));
+        assert!(err
+            .to_string()
+            .contains(INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED));
+        assert!(err
+            .to_string()
+            .contains("contract instance entry is archived"));
     }
 }
